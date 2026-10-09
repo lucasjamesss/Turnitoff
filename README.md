@@ -1,6 +1,6 @@
 # Turnitoff
 
-Makes Claude and ChatGPT write like one person instead of a template.
+Makes Claude and ChatGPT stop writing like an AI. Helping you get around those tools your teacher uses 😉...
 
 ## Get it
 
