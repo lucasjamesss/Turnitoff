@@ -10,7 +10,7 @@ from .rules import full_rule, short_rule
 from .scanner import analyze, report, verdict
 
 EXTS = {".md", ".txt", ".tex"}
-SKIP_NAMES = {"CLAUDE.md", "SKILL.md", "RULES.md", "PASTE.md", "AGENTS.md", "INSTALL.md"}
+SKIP_NAMES = {"CLAUDE.md", "SKILL.md", "RULES.md", "PASTE.md", "AGENTS.md", "INSTALL.md", "README.md"}
 
 
 def _state(key):

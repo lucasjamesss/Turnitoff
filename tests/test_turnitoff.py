@@ -110,7 +110,7 @@ class HookTests(unittest.TestCase):
         self.assertEqual(self.hook(self.file_event("notes.py", AI)).returncode, 0)
 
     def test_ignores_instruction_files(self):
-        for name in ("CLAUDE.md", "SKILL.md", "AGENTS.md"):
+        for name in ("CLAUDE.md", "SKILL.md", "AGENTS.md", "README.md"):
             self.assertEqual(self.hook(self.file_event(name, AI)).returncode, 0, name)
 
     def test_ignores_claude_config_dir(self):
@@ -217,6 +217,9 @@ class RuleTextTests(unittest.TestCase):
 
     def test_install_runbook_carries_the_paste_block(self):
         self.assertIn(short_rule(), (ROOT / "INSTALL.md").read_text(encoding="utf-8"))
+
+    def test_readme_carries_the_paste_block(self):
+        self.assertIn(short_rule(), (ROOT / "README.md").read_text(encoding="utf-8"))
 
     def test_no_em_dashes_in_rule_files(self):
         for name in ("PASTE.md", "RULES.md"):
