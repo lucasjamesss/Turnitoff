@@ -31,6 +31,7 @@ Write like one specific person, not a template.
 7. No bold-lead bullets, emoji, or headers on short pieces.
 8. One hedge per claim. Say "I don't know" when true.
 9. Fix a flagged sentence by rewriting it. Never swap in a synonym.
+10. Review repeated openings and phrases even if the score is clean. Rewrite from meaning; keep facts and technical terms. Repetition flags are not word probabilities.
 ```
 
 Where it goes:
@@ -52,6 +53,14 @@ On Claude Code the checker runs by itself whenever Claude saves a text file. Eve
 - It can't promise a result in any detector. They are unreliable and flag human writing too, especially formal writing and non-native English. The checker's thresholds are uncalibrated guesses.
 - It can't invent a voice. Give the AI real details (names, numbers, one true example) and a sample of your own writing.
 - It doesn't change your school's or employer's rules on AI. Follow them.
+
+## Predictability checks
+
+The checker now flags the same two-word sentence opening used at least three times across at least half the sentences, and the same four-word phrase appearing in at least three sentences. Findings quote the wording, identify sentence numbers and suggest what to review. Short sentences, double-quoted wording and markdown list blocks are excluded from these new checks. Existing sentence-length checks still apply to short sentences.
+
+The writing assistant reviews these findings even when the overall score is clean, rewrites from the original meaning and scans again, up to three passes. The scanner itself does not generate edits. Keep necessary technical terms and deliberate repetition when they improve clarity.
+
+These are repetition heuristics. Turnitoff does not run a language model, calculate next-word probabilities or perplexity, or measure how predictable a passage is to another model. Its scores are uncalibrated. A clean result does not establish accuracy, quality or human authorship.
 
 ## For the AI reading this
 

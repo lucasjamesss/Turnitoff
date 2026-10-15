@@ -54,6 +54,51 @@ class ScannerTests(unittest.TestCase):
         text = "Plain sentence here.\n```\nleverage seamless tapestry delve\n```\nSee https://example.com/tapestry for more."
         self.assertEqual(analyze(text)[1], [])
 
+    def test_repeated_openings_include_locations_and_rewrite_guidance(self):
+        text = ('The strategy gives children several design options. '
+                'The strategy requires parents to approve the price. '
+                'The strategy removes compulsory travel to stores.')
+        findings = analyze(text)[1]
+        flag = next(f for f in findings if f.startswith('predictable sentence openings'))
+        self.assertIn('"the strategy"', flag)
+        self.assertIn('sentences 1, 2, 3', flag)
+        self.assertIn('preserve their meaning', flag)
+
+    def test_repeated_phrases_are_counted_across_sentences(self):
+        text = ('Parents can approve the total price before buying. '
+                'Children see adults approve the total price online. '
+                'Staff explain how to approve the total price locally.')
+        flags = [f for f in analyze(text)[1] if f.startswith('repeated phrase')]
+        self.assertEqual(len(flags), 1)
+        self.assertIn('"approve the total price"', flags[0])
+        self.assertIn('sentences 1, 2, 3', flags[0])
+
+    def test_repetition_within_one_sentence_does_not_trigger(self):
+        text = ('We approve the total price, approve the total price again, '
+                'then approve the total price once more.')
+        self.assertFalse(any(f.startswith('repeated phrase') for f in analyze(text)[1]))
+
+    def test_predictability_checks_ignore_quotes_code_and_lists(self):
+        text = ('Ana read "approve the total price" aloud for everyone. '
+                'Ben wrote “approve the total price” beside his notes. '
+                'Cam copied "approve the total price" onto another page.\n\n'
+                '```\nThe strategy has several useful options here.\n```\n\n'
+                '- The strategy has several useful options here.\n'
+                '- The strategy has several useful choices here.\n'
+                '- The strategy has several useful prices here.')
+        self.assertFalse(any(f.startswith(('repeated phrase', 'predictable sentence openings'))
+                             for f in analyze(text)[1]))
+
+    def test_technical_terms_and_two_repetitions_are_not_flagged(self):
+        text = ('Self-concept explains why children value design choice. '
+                'Parents use self-concept to understand the choice. '
+                'Different household decision roles affect the purchase. '
+                'These household decision roles also shape later satisfaction.')
+        self.assertEqual(analyze(text)[1], [])
+
+    def test_deliberate_short_fragments_are_not_flagged(self):
+        self.assertEqual(analyze('We waited. We waited. We waited.')[1], [])
+
 
 class CliTests(unittest.TestCase):
     def cli(self, *args, stdin=None, env=None):
@@ -179,6 +224,15 @@ class McpTests(unittest.TestCase):
         self.assertIn("reads-AI", res["content"][0]["text"])
         clean = self.call("scan_text", {"text": HUMAN})["result"]["content"][0]["text"]
         self.assertIn("Send it.", clean)
+
+    def test_clean_score_with_predictability_finding_still_requests_review(self):
+        text = ('The strategy gives children several design options. '
+                'The strategy requires parents to approve the price. '
+                'The strategy removes compulsory travel to stores.')
+        self.assertEqual(verdict(analyze(text)[0]), 'clean')
+        result = self.call('scan_text', {'text': text})['result']['content'][0]['text']
+        self.assertIn('Rewrite the flagged sentences', result)
+        self.assertNotIn('Send it.', result)
 
     def test_scan_file(self):
         res = self.call("scan_file", {"path": str(ROOT / "tests/samples/ai.md")})["result"]

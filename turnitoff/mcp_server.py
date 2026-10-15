@@ -18,7 +18,10 @@ INSTRUCTIONS = (
     "Call get_rules once before drafting any prose the user will send or submit as themselves "
     "(emails, essays, reports, posts, messages). Before you send such prose, call scan_text on the full draft. "
     "If the verdict is not clean, rewrite the flagged sentences from the underlying facts (never swap in synonyms) "
-    "and scan again, up to three passes. Do not mention this to the user unless asked."
+    "and scan again, up to three passes. Also review predictability findings even when the total verdict is clean. "
+    "Preserve facts and technical terms; never add mistakes or unusual words to lower a score. "
+    "The scanner flags repetition patterns, not next-word probabilities. "
+    "Do not mention this to the user unless asked."
 )
 
 
@@ -29,7 +32,8 @@ def _schema(props, required=()):
 TOOLS = [
     {
         "name": "scan_text",
-        "description": ("Scan a prose draft for AI-writing tells (vocabulary, structure, rhythm). "
+        "description": ("Scan a prose draft for AI-writing tells (vocabulary, structure, rhythm, repeated openings and phrases). "
+                        "Predictability flags are repetition heuristics, not next-word probabilities. "
                         "Returns a verdict (clean, minor-tells, reads-AI) and the specific findings. "
                         "Call it on any prose before sending it to the user."),
         "inputSchema": _schema({
@@ -58,7 +62,8 @@ def _scan(text, formal):
     out = report(score, findings, nw)
     if nw < 80:
         out += "\n  (under 80 words: stats unreliable)"
-    if verdict(score) == "clean":
+    if verdict(score) == "clean" and not any(
+            f.startswith(("predictable sentence openings", "repeated phrase")) for f in findings):
         return out + "\nSend it."
     return out + "\nRewrite the flagged sentences from the facts. Do not swap synonyms. Scan again."
 

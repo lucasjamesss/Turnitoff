@@ -4,6 +4,7 @@ Thresholds are uncalibrated guesses. Tune them on your own writing.
 """
 import re
 import statistics as st
+from collections import defaultdict
 
 HARD = (r"delv(?:e|es|ed|ing)|tapestry|testament|multifaceted|holistic|seamless(?:ly)?|"
         r"camaraderie|palpable|ever-evolving|game-changer|plethora|myriad|embark(?:s|ed|ing)?|"
@@ -58,14 +59,53 @@ def paragraphs(t):
     return out
 
 
-def sentence_lengths(paras):
-    n = []
+def sentences(paras):
+    out = []
     for p in paras:
         for s in re.split(r"(?<=[.!?])\s+(?=[A-Z\"'“(\[])", p):
-            c = len(words(s))
-            if c:
-                n.append(c)
-    return n
+            if words(s):
+                out.append(s)
+    return out
+
+
+def sentence_lengths(paras):
+    return [len(words(s)) for s in sentences(paras)]
+
+
+def predictability_findings(paras):
+    """Local repetition cues, not next-word probabilities or authorship evidence.
+
+    Require repetition across sentences. Ignore quoted wording and short sentences
+    so quotations, technical terms and deliberate short fragments stay useful.
+    """
+    source = sentences(paras)
+    tokens = [words(re.sub(r'"[^"\n]*"|“[^”\n]*”', ' ', s).lower()) for s in source]
+    openings = defaultdict(list)
+    phrases = defaultdict(set)
+    for i, ts in enumerate(tokens, 1):
+        if len(ts) < 6:
+            continue
+        openings[tuple(ts[:2])].append(i)
+        for j in range(len(ts) - 3):
+            phrases[tuple(ts[j:j + 4])].add(i)
+    findings = []
+    repeated_openings = set()
+    for phrase, ids in openings.items():
+        if len(ids) >= 3 and len(ids) >= len(source) / 2:
+            repeated_openings.add(phrase)
+            findings.append((2, 'predictable sentence openings "%s" (sentences %s): '
+                             'vary how the claims begin; preserve their meaning' %
+                             (' '.join(phrase), ', '.join(map(str, ids)))))
+    seen_groups = set()
+    for phrase, ids in phrases.items():
+        group = tuple(sorted(ids))
+        if len(ids) < 3 or group in seen_groups or phrase[:2] in repeated_openings:
+            continue
+        seen_groups.add(group)
+        findings.append((2, 'repeated phrase "%s" (sentences %s): '
+                         'remove redundant wording; retain necessary technical terms' %
+                         (' '.join(phrase), ', '.join(map(str, group)))))
+    return findings[:3]
 
 
 def cv(xs):
@@ -114,6 +154,7 @@ def analyze(raw, formal=False):
         f.append((1, "emoji in prose"))
 
     paras = paragraphs(t)
+    f.extend(predictability_findings(paras))
     if paras and re.match(CLOSER, paras[-1]):
         f.append((2, "announced conclusion in last paragraph"))
     elif sum(1 for p in paras if re.match(CLOSER, p)) >= 1:

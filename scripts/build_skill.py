@@ -64,6 +64,8 @@ If you can run code, save the draft to a file and scan it before you send it. Ru
 - `minor-tells`: fix what is cheap to fix.
 - `reads-AI`: rewrite the flagged sentences from the underlying facts, then scan again. After three passes, send it and tell the user it still flags.
 
+Review repeated-opening and repeated-phrase findings even when the verdict is clean. Rewrite from the meaning and rescan, up to three passes. Preserve facts and technical terms; keep deliberate repetition when it helps clarity. Never add errors or unusual synonyms to lower a score. These flags measure repetition patterns, not next-word probabilities. The scanner reports; the writing assistant edits.
+
 If you can't run code, apply the rule by hand. The full version is in `references/RULES.md`.
 
 Don't mention the scan to the user unless they ask.

@@ -19,6 +19,14 @@ Goal: text that reads like one specific person with something to say. Do not cha
 - Cut connective filler: Moreover, Furthermore, Additionally, Notably, Importantly.
 - Spend words unevenly: three sentences on the point that matters, one on the rest.
 
+## Predictability review
+
+- Review repeated two-word sentence openings and four-word phrases across sentences. The scanner gives the wording and sentence numbers.
+- Rewrite flagged sentences from their meaning: remove redundant framing, change the sentence structure or combine overlapping claims. Preserve facts, qualifications and necessary technical terms.
+- Review these findings even when the overall verdict is clean. Keep deliberate repetition when it improves clarity and explain that choice if asked.
+- Do not replace clear words with unusual synonyms, insert errors or force choppy sentences to lower a score.
+- These are repetition heuristics, not next-word probabilities, perplexity or a calibrated AI detector. The scanner reports findings; the writing assistant edits and rescans, up to three passes.
+
 ## Words to avoid
 
 delve, tapestry, landscape (figurative), pivotal, crucial, underscore, showcase, foster, enhance, testament, intricate, multifaceted, holistic, robust, seamless, leverage, utilize, navigate (figurative), realm, journey, vibrant, ever-evolving, game-changer, camaraderie, palpable, "in today's ...", "plays a crucial role", "it's worth noting", "when it comes to", "dive into", "unlock", "elevate".

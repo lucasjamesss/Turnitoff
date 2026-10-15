@@ -63,6 +63,7 @@ Write like one specific person, not a template.
 7. No bold-lead bullets, emoji, or headers on short pieces.
 8. One hedge per claim. Say "I don't know" when true.
 9. Fix a flagged sentence by rewriting it. Never swap in a synonym.
+10. Review repeated openings and phrases even if the score is clean. Rewrite from meaning; keep facts and technical terms. Repetition flags are not word probabilities.
 ```
 
 It is a copy of `turnitoff/data/PASTE.md`. If the copy here looks cut off, read https://raw.githubusercontent.com/lucasjamesss/Turnitoff/main/turnitoff/data/PASTE.md
